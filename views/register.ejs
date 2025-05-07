@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="card">
+    <h2>Register</h2>
+    <% if (locals.error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <small>Password must be 6-8 characters with at least one lowercase, one uppercase letter, and one number</small>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
