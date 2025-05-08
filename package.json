@@ -1,16 +1,20 @@
 {
   "name": "secrets-app",
   "version": "1.0.0",
-  "description": "A secure web application for sharing secrets",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "build": "npm install",
+    "prod": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
-    "debug": "^4.4.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
@@ -19,8 +23,5 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^6.8.0",
     "validator": "^13.7.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.20"
   }
 }
