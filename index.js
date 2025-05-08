@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGODB_URI, {
   debug('MongoDB connection error:', err);
   process.exit(1);
 });
-mongoose.set('strictQuery', false); 
+mongoose.set('strictQuery', true); 
 // Middleware Stack
 app.use(helmet());
 app.use(express.json());
