@@ -14,6 +14,7 @@ const debug = require('debug')('app:auth');
 const app = express();
 
 // Database Connection
+mongoose.set('strictQuery', true);
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,7 +25,7 @@ mongoose.connect(process.env.MONGODB_URI, {
   debug('MongoDB connection error:', err);
   process.exit(1);
 });
-mongoose.set('strictQuery', true); 
+
 // Middleware Stack
 app.use(helmet());
 app.use(express.json());
