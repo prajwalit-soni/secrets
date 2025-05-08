@@ -1,3 +1,10 @@
+process.on('uncaughtException', err => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', err => {
+  console.error('Unhandled Rejection:', err);
+});
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -11,20 +18,20 @@ const ejs = require('ejs');
 const path = require('path');
 const debug = require('debug')('app:auth');
 
+
 const app = express();
 
 // Database Connection
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  retryWrites: true
-})
-.then(() => debug('MongoDB connected successfully'))
-.catch(err => {
-  debug('MongoDB connection error:', err);
-  process.exit(1);
-});
+const connectWithRetry = () => {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => {
+      console.error('MongoDB connection error:', err);
+      setTimeout(connectWithRetry, 5000); // Retry every 5 seconds
+    });
+};
+connectWithRetry();
 
 // Middleware Stack
 app.set('trust proxy', 1); 
@@ -33,17 +40,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Too many requests from this IP, please try again later'
+  message: 'Too many requests',
+  skip: (req) => req.ip === '::ffff:127.0.0.1' // Skip for health checks
 });
-
 app.use(limiter);
-
-
 // View Engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -95,6 +99,7 @@ const generateToken = (user) => {
 };
 
 // Routes
+app.get('/health', (req, res) => res.sendStatus(200));
 app.get('/', (req, res) => {
   res.render('home', { title: 'Welcome' });
 });
@@ -267,7 +272,7 @@ app.use((err, req, res, next) => {
 });
 
 // Server Start
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-  debug(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
